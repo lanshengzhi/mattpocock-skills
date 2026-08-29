@@ -49,14 +49,15 @@ A starting situation that generates work, then merges onto the main flow.
 
 Not feature work, just upkeep.
 
-- **`/improve-codebase-architecture`** runs whenever you have a spare moment to keep the codebase good for agents to operate in. It surfaces **deepening opportunities**; picking one _generates an idea_ you can take into the main flow at `/grill-with-docs`. It's the survey that finds the candidates; **`/codebase-design`** (below) is the bench you design the chosen one on.
+- **`/improve-codebase-architecture`** runs whenever you have a spare moment to keep the codebase good for agents to operate in. It applies `/minimal-code`'s **existence test** before a deepening earns a card, then grills whichever candidate you pick in place. That grilling _is_ step 1 of the main flow, so a settled candidate merges on at the size branch, `/implement` for a single-session change, `/to-spec` for a multi-session one. Going back to `/grill-with-docs` would re-run an interview that already happened. It's the survey that filters the candidates; **`/codebase-design`** (below) is the bench where a survivor takes shape.
 
 ## Vocabulary underneath
 
-Two model-invoked references that run *beneath* the other skills, each the single source of truth for its vocabulary. Reach for them directly when the **words**, not the process, are the problem; or let the skills above pull them in.
+Three model-invoked references that run *beneath* the other skills, each the single source of truth for its vocabulary. Reach for them directly when the **words**, not the process, are the problem; or let the skills above pull them in.
 
 - **`/domain-modeling`**: sharpen the project's *domain* language: challenge a fuzzy term, resolve an overloaded word ("account" doing three jobs), record a hard-to-reverse decision as an ADR. It's the active discipline `/grill-with-docs` drives to keep `CONTEXT.md` a clean glossary.
 - **`/codebase-design`** is the deep-module vocabulary (module, interface, depth, seam, adapter, leverage, locality) for designing a module's *shape*: a lot of behaviour behind a small interface at a clean seam. `/tdd` and `/improve-codebase-architecture` both speak it.
+- **`/minimal-code`** is the minimal-change vocabulary. Its **existence test** decides whether architecture work earns its place before `/improve-codebase-architecture` shapes it; its ladder, never-cut list, and `debt:` marker decide how little code implements settled work. `/tdd` consults the ladder during each green-phase implementation.
 
 ## Phase boundaries
 

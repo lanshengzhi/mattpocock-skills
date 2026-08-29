@@ -1,10 +1,10 @@
 ## What it does
 
-`improve-codebase-architecture` surveys a codebase for **deepening opportunities**: places where a shallow module (an interface nearly as complex as the thing it hides) could become a deep one. It writes them up as a self-contained HTML report, and then [grills](https://www.aihero.dev/ai-coding-dictionary/grilling) you through whichever one you pick.
+`improve-codebase-architecture` surveys a codebase for **deepening opportunities**: places where a shallow module (an interface nearly as complex as the thing it hides) could become a deep one. It writes them up as a single-file HTML report, and then [grills](https://www.aihero.dev/ai-coding-dictionary/grilling) you through whichever one you pick.
 
-It never changes the code. The whole run produces one HTML file in your OS temp directory and a conversation; the refactor itself happens later, in a separate [session](https://www.aihero.dev/ai-coding-dictionary/session), through the normal build flow. That is what makes it a survey rather than a refactoring tool, and it is why the skill is worth running on a codebase you are not ready to touch yet.
+It never changes the code. The whole run produces one report file in your OS temp directory and a conversation; the refactor itself happens through the normal build flow after the skill hands off, in the same [session](https://www.aihero.dev/ai-coding-dictionary/session) or a later one depending on the size of the job.
 
-Two filters keep the report from becoming generic cleanup advice. Every candidate has to pass the **deletion test**: would removing this module concentrate complexity behind a smaller interface, or just spread it across callers? Only the "concentrates" cases earn a card. And unless you point it at a specific area, it reads recent commit history first and biases the scan toward paths that are actively changing, on the grounds that a deepening in code nobody touches is a refactor you will never cash in.
+Three filters keep the report from becoming generic cleanup advice. The **existence test** requires current friction or a named upcoming change, selects the earliest structural move that resolves it, and makes each candidate state what becomes smaller or disappears. The **deletion test** asks whether removing the current module would concentrate complexity behind a smaller interface or spread it across callers. Finally, unless you point the scan at a specific area, recent commit history biases it toward paths that are actively changing. A deepening in code nobody touches is a refactor you will never cash in.
 
 ## When to reach for it
 
@@ -27,27 +27,34 @@ Where it is confusable with siblings:
 
 ## Prerequisites
 
-None to run it. It reads `CONTEXT.md` and any ADRs in `docs/adr/` if they exist, and speaks in your domain's own nouns when they do: a candidate reads as "deepen the Order intake module," not "refactor the FooBarHandler."
+The scan needs no setup. Rendering the styled report and its diagrams needs network access because Tailwind and Mermaid load from CDNs. It reads `CONTEXT.md` and any ADRs in `docs/adr/` if they exist, and speaks in your domain's own nouns when they do: a candidate reads as "deepen the Order intake module," not "refactor the FooBarHandler."
 
-It writes in two places. The report goes to `<tmpdir>/architecture-review-<timestamp>.html`, outside the repo. During the grilling loop it will add or sharpen terms in `CONTEXT.md`, creating that file if it does not exist, and offer to record a rejected candidate as an ADR so a future run does not re-suggest it.
+It writes in two places. The report goes to `<tmpdir>/architecture-review-<timestamp>.html`, outside the repo, and opens for you with your system's default browser. During the grilling loop it will add or sharpen terms in `CONTEXT.md`, creating that file if it does not exist, and offer to record a rejected candidate as an ADR so a future run does not re-suggest it.
 
 ## Depth, and the report that hunts for it
 
 The skill turns on one idea: **depth**. A deep module puts a lot of behaviour behind a small, stable interface. A shallow one leaks its implementation through an interface nearly as wide as the code beneath it. The report hunts for shallowness in three forms: pure functions extracted only for testability while the real bugs live in how they are called (no **locality**), modules leaking across their **seams**, and a concept you cannot understand without opening five files. It closes with a proposal for the deepening that fixes it.
 
-Each candidate is a card: the files involved, the friction, a plain-English solution, the benefit stated in terms of **locality** and **leverage**, a before/after diagram, and a strength badge.
+Each candidate is a card: the files involved, the evidence, the friction, the earliest structural move that resolves it, what becomes smaller or disappears, the benefit stated in terms of **locality** and **leverage**, a before/after diagram, and a strength badge.
 
 | Badge | What it means for you |
 | --- | --- |
-| `Strong` | The deletion test passes clearly and the friction is real. Take these seriously. |
-| `Worth exploring` | Plausible deepening, but the payoff depends on where the code is going next. |
-| `Speculative` | Surfaced for completeness. Most of these are safe to ignore. |
+| `Strong` | The existence and deletion tests pass clearly, and the payoff is direct. |
+| `Worth exploring` | The evidence is real, but the payoff depends on where the code is going next. |
+| `Speculative` | The evidence is real, but the payoff is uncertain. |
 
-The report ends with a **Top recommendation** (the one it would tackle first), and then the skill stops and asks which candidate you want to explore. Nothing has been decided at that point, and no code has moved.
+When candidates exist, the report ends with a **Top recommendation** and asks which candidate you want to explore. When none passes the existence test, the report says **No actionable deepening opportunities**, omits the recommendation, and ends the run. Nothing has been decided at that point, and no code has moved.
 
 ## What happens after you pick one
 
-Picking a candidate starts a [grilling](https://aihero.dev/skills-grilling) session over it: constraints, what sits behind the seam, which tests survive, what the deepened interface should look like. The output of that session is a decision, not a diff. From there the normal flow applies: take the decision into [to-spec](https://aihero.dev/skills-to-spec), then [to-tickets](https://aihero.dev/skills-to-tickets), then [implement](https://aihero.dev/skills-implement).
+Picking a candidate starts a [grilling](https://aihero.dev/skills-grilling) session over it: constraints, what sits behind the seam, which tests survive, what the deepened interface should look like. The output of that session is a decision, not a diff. When the grilling settles, the skill closes out with a handoff packet (the chosen candidate, the confirmed shape and seam constraints, the test strategy, the CONTEXT.md and ADR changes with their paths, and anything still open) and names the next command by size:
+
+| Size of the job | Where the decision goes |
+| --- | --- |
+| Fits in one session | Straight to [implement](https://aihero.dev/skills-implement), in the same window, while the grilling is still verbatim in context. |
+| Multi-session | [to-spec](https://aihero.dev/skills-to-spec), then [to-tickets](https://aihero.dev/skills-to-tickets), then implement per ticket, with context cleared between tickets. |
+
+If the grilling surfaced a question conversation cannot settle, the detour is [handoff](https://aihero.dev/skills-handoff) out, [prototype](https://aihero.dev/skills-prototype), handoff back, then routing resumes. The skill itself never edits code and never files tickets.
 
 ## Common questions
 
@@ -61,7 +68,7 @@ The report loads Tailwind and Mermaid from CDNs, so it needs network access when
 
 **It gave me twelve candidates. Do I work through them in the same session or start a new one?**
 
-One candidate per session. Working through several in one conversation fills the [context window](https://www.aihero.dev/ai-coding-dictionary/context-window) with the report, the grilling, the domain-model edits and the code changes all at once. The report only lives in a temp file, so carry the candidate itself rather than the file: pick one, grill it, take the decision into `/to-spec`, and turn the rest into [tickets](https://www.aihero.dev/ai-coding-dictionary/ticket) you can pick up independently later. Put the chosen improvement into a spec rather than going straight to implementation. This is a recurring question with no documented workflow in the skill itself.
+One candidate per session. Working through several in one conversation fills the [context window](https://www.aihero.dev/ai-coding-dictionary/context-window) with the report, the grilling, the domain-model edits and the code changes all at once. The report only lives in a temp file, so carry the candidate itself rather than the file: pick one, grill it, and let the skill route the settled decision (straight to `/implement` if it fits one session, into `/to-spec` if it does not). Turn the remaining candidates into [tickets](https://www.aihero.dev/ai-coding-dictionary/ticket) you can pick up independently later.
 
 **How should I prompt it?**
 
@@ -77,7 +84,7 @@ Partly. It is strong on big existing codebases lacking consistent structure, and
 
 **Will it ever tell me the codebase is fine?**
 
-Rarely, and you should know that going in. The skill is built to output findings, so the framing pushes it toward producing candidates rather than concluding that nothing is wrong. The strength badges are the defence: a report where everything is `Speculative` is the skill telling you it found nothing, in the only way it knows how.
+Yes. Every candidate must pass the existence test by naming current evidence, taking the earliest structural move that holds, and stating what becomes smaller or disappears. When none passes, the report says **No actionable deepening opportunities** instead of filling the page with speculative refactors.
 
 **Does it work in Codex or another harness?**
 
@@ -89,13 +96,16 @@ There is no good answer shipped with the skill. The recurring request is for a `
 
 ## It's working if
 
+- A scan with no justified refactor ends with **No actionable deepening opportunities**.
+- Every candidate names current evidence and what becomes smaller or disappears.
 - The candidates name your domain's concepts, not invented class names: "the Order intake module," not "the FooBarHandler."
 - The candidates cluster in files you have edited recently, not in dormant corners of the repo.
 - No code changed during the run. The only new file is the HTML report in your temp directory.
 - It stops after the report and asks which candidate you want, rather than continuing on its own.
-- Each card explains the payoff as locality or leverage, and says which tests get simpler, not just "this is cleaner."
+- When the grilling settles, it names the next command (`/implement` for a single-session deepening, `/to-spec` for a multi-session one) instead of trailing off or starting to edit code.
+- Each card explains the payoff as locality or leverage, says which tests get simpler, and identifies the earliest structural move that holds.
 - Rejecting a candidate for a durable reason gets you an offer to record an ADR, so the next run does not re-suggest it.
 
 ## Where it fits
 
-`improve-codebase-architecture` is **periodic maintenance**: run it every few days, outside any chain, to queue up work rather than to do it. Its neighbours are [codebase-design](https://aihero.dev/skills-codebase-design), which owns the depth-and-seam vocabulary every candidate is written in, [grilling](https://aihero.dev/skills-grilling), which walks the decision tree once you have chosen a candidate, and [domain-modeling](https://aihero.dev/skills-domain-modeling), which keeps `CONTEXT.md` and the ADRs current as the decision settles. What it produces is an idea, which re-enters the main build flow at [grill-with-docs](https://aihero.dev/skills-grill-with-docs) or [to-spec](https://aihero.dev/skills-to-spec). For which skill fits a situation, [ask-matt](https://aihero.dev/skills-ask-matt) is the router over the whole set.
+`improve-codebase-architecture` is **periodic maintenance**: run it every few days, outside any chain, to queue up work rather than to do it. [Minimal-code](https://aihero.dev/skills-minimal-code) owns the existence test that filters candidates, [codebase-design](https://aihero.dev/skills-codebase-design) owns the depth-and-seam vocabulary that shapes survivors, [grilling](https://aihero.dev/skills-grilling) walks the decision tree after you choose one, and [domain-modeling](https://aihero.dev/skills-domain-modeling) keeps `CONTEXT.md` and the ADRs current as the decision settles. A grilled decision re-enters the main build flow at [implement](https://aihero.dev/skills-implement) for a single-session change or [to-spec](https://aihero.dev/skills-to-spec) for a multi-session one; the interview already happened inside the skill, so it never goes back through [grill-with-docs](https://aihero.dev/skills-grill-with-docs). For which skill fits a situation, [ask-matt](https://aihero.dev/skills-ask-matt) is the router over the whole set.

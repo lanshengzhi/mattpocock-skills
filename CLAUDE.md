@@ -1,3 +1,5 @@
+Fork workflow: Before editing, committing, pushing, or syncing this fork, read [.agents/fork-workflow.md](./.agents/fork-workflow.md).
+
 Skills are organized into bucket folders under `skills/`:
 
 - `engineering/`: daily code work
