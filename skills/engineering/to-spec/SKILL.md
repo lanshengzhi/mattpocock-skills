@@ -16,7 +16,9 @@ The issue tracker and triage label vocabulary should have been provided to you. 
 
 Check with the user that these seams match their expectations.
 
-3. Write the spec using the template below, then publish it to the project issue tracker. Apply the `ready-for-agent` triage label - no need for additional triage.
+3. Run a simplicity pass. Every user story must trace back to the Problem Statement: a story that doesn't bear the problem's weight is demoted into Out of Scope with one line on why it isn't being built, so the user can overrule the demotion, never silently deleted. Anything the user explicitly asked for stays, trace or not. For each surviving story, check whether an existing module or an already-installed dependency already covers it; where one does, name it in Implementation Decisions instead of speccing new work. The pass is synthesis from the conversation and the codebase, not a new round of questions.
+
+4. Write the spec using the template below, then publish it to the project issue tracker. Apply the `ready-for-agent` triage label - no need for additional triage.
 
 <spec-template>
 

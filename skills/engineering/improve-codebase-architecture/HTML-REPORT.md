@@ -1,6 +1,6 @@
 # HTML Report Format
 
-The architectural review is rendered as a single self-contained HTML file in the OS temp directory. Tailwind and Mermaid both come from CDNs. Mermaid handles graph-shaped diagrams reliably; hand-built divs and inline SVG handle the more editorial visuals (mass diagrams, cross-sections). Mix the two: don't lean on Mermaid for everything, it'll start to look generic.
+The architectural review is rendered as a single HTML file in the OS temp directory. Tailwind and Mermaid both come from CDNs. Mermaid handles graph-shaped diagrams reliably; hand-built divs and inline SVG handle the more editorial visuals (mass diagrams, cross-sections). Mix the two: don't lean on Mermaid for everything, it'll start to look generic.
 
 ## Scaffold
 
@@ -27,6 +27,7 @@ The architectural review is rendered as a single self-contained HTML file in the
     <main class="max-w-5xl mx-auto px-6 py-12 space-y-12">
       <header>...</header>
       <section id="candidates" class="space-y-10">...</section>
+      <!-- Include only when at least one candidate passes. -->
       <section id="top-recommendation">...</section>
     </main>
   </body>
@@ -46,9 +47,11 @@ Each candidate is one `<article>`:
 - **Title**: short, names the deepening (e.g. "Collapse the Order intake pipeline").
 - **Badge row**: recommendation strength (`Strong` = emerald, `Worth exploring` = amber, `Speculative` = slate), plus a tag for the dependency category (`in-process`, `local-substitutable`, `ports & adapters`, `mock`).
 - **Files**: monospaced list, `font-mono text-sm`.
+- **Evidence**: one line naming the observed friction or upcoming change.
 - **Before / After diagram**: the centrepiece. Two columns, side by side. See patterns below.
 - **Problem**: one sentence. What hurts.
-- **Solution**: one sentence. What changes.
+- **Solution**: one sentence naming the earliest structural move that holds.
+- **What disappears**: one line naming the interface, module, duplication, or spread of knowledge that shrinks or goes away.
 - **Wins**: bullets, ≤6 words each. e.g. "Tests hit one interface", "Pricing logic stops leaking", "Delete 4 shallow wrappers".
 - **ADR callout** (if applicable): one line in an amber-tinted box.
 
@@ -101,7 +104,9 @@ Before: a tree of function calls rendered as nested boxes. After: the same tree 
 
 ## Top recommendation section
 
-One larger card. Candidate name, one sentence on why, anchor link to its card. That's it.
+When candidates exist, render one larger card. Candidate name, one sentence on why, anchor link to its card. That's it.
+
+When no candidate passes the existence test, replace the candidate list with a compact **No actionable deepening opportunities** empty state and omit the Top recommendation. The empty state is a valid result, not an invitation to invent a speculative card.
 
 ## Tone
 

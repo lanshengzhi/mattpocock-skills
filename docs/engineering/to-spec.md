@@ -27,6 +27,8 @@ The spec exists because context windows end. Everything you settled while [grill
 
 So it does not validate anything, and it does not decide anything. It captures what was decided, in your project's own vocabulary, so that a fresh session can pick the work up without you re-explaining it. Anything the spec asserts that you never actually said is a defect.
 
+The one filter it applies is a **simplicity pass**, and it is derivation, not invention. Every user story must trace back to the Problem Statement: one that doesn't bear the problem's weight is demoted to the out-of-scope section with one line saying why it isn't being built, so you can overrule the demotion at review. Anything you explicitly asked for stays, trace or not. Stories that survive are checked against the codebase and the installed dependencies, and whatever already covers one is named as reuse in the implementation decisions rather than specced as new work.
+
 ## Seams before prose
 
 Before it writes a word, `to-spec` sketches the **seams** the feature will be tested at, and checks them with you. It prefers seams that already exist to new ones, and takes the highest seam it can: the ideal number across a change is one.
@@ -69,6 +71,7 @@ Very large specs can outgrow what a tracker issue will serve back cleanly, and t
 - It comes back in your project's nouns, not generic product-management boilerplate.
 - Every decision in it is one you can remember making. Nothing was invented to fill a section.
 - The out-of-scope section has real things in it: the things you refused are usually the most useful lines on the page.
+- Every demoted story is findable there with its reason attached, and nothing you explicitly asked for is among them.
 
 ## Where it fits
 
